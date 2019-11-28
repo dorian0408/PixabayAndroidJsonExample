@@ -1,3 +1,5 @@
+package com.dorian.pixabayandroidjsonexample;
+
 public class ExampleItem {
     private String mImageUrl;
     private String mCreator;
