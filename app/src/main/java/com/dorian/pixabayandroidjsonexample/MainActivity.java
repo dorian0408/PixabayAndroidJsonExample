@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.android.volley.Request;
@@ -20,11 +21,16 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ExampleAdapter.OnItemClickListener {
+    public static final String EXTRA_URL = "imageUrl";
+    public static final String EXTRA_CREATOR = "creatorName";
+    public static final String EXTRA_LIKES = "likeCount";
+
     private RecyclerView mRecyclerView;
     private ExampleAdapter mExampleAdapter;
     private ArrayList<ExampleItem> mExampleItemArrayList;
     private RequestQueue mRequestQueue;
+
 
 
     @Override
@@ -44,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void parseJSON() {
-//        String url = "https://pixabay.com/api/?key=14444837-7282363c726bab83673484748&q=yellow+flowers&image_type=photo&pretty=true";
-        String url = "https://pixabay.com/api/?key=14444837-7282363c726bab83673484748&q=earth&image_type=photo&pretty=true";
+        String url = "https://pixabay.com/api/?key=14444837-7282363c726bab83673484748&q=yellow+flowers&image_type=photo&pretty=true";
+//        String url = "https://pixabay.com/api/?key=14444837-7282363c726bab83673484748&q=earth&image_type=photo&pretty=true";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
                             mExampleAdapter = new ExampleAdapter(MainActivity.this,mExampleItemArrayList);
                             mRecyclerView.setAdapter(mExampleAdapter);
+                            mExampleAdapter.setOnItemClickListener(MainActivity.this);
 
 
                         } catch (JSONException e) {
@@ -79,5 +86,17 @@ public class MainActivity extends AppCompatActivity {
 
         mRequestQueue.add(request);
 
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent detailIntent = new Intent(this,DetailActivity.class);
+        ExampleItem clickedItem = mExampleItemArrayList.get(position);
+
+        detailIntent.putExtra(EXTRA_URL,clickedItem.getmImageUrl());
+        detailIntent.putExtra(EXTRA_CREATOR,clickedItem.getmCreator());
+        detailIntent.putExtra(EXTRA_LIKES,clickedItem.getmLikesCount());
+
+        startActivity(detailIntent);
     }
 }
